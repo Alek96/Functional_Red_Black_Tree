@@ -16,7 +16,7 @@ class RBTree {
     * Abstract tree class used for Node and Empty case classes
     * @tparam A Type of the value contained in RBtree
     */
-  abstract class Tree[+A]
+  abstract class Tree[+A]()
 
   /**
     * Case class for representing not empty nodes of the RBTree
@@ -25,11 +25,19 @@ class RBTree {
     * @param value Value of the node
     * @param right Right subtree
     */
-  final case class Node[A](color: Color, left: Tree[A], value: A, right: Tree[A]) extends Tree[A]
+  final case class Node[A <% Ordered[A]](color: Color, left: Tree[A], value: A, right: Tree[A]) extends Tree[A]
 
   /**
-    * Case class for representing empty leaves of the RBTree
+    * Case object for representing empty leaves of the RBTree
     */
-  final case class Empty[A]() extends Tree[A]
+  final case object Empty extends Tree[Nothing] {
+    def color: Color = Black
+  }
+
+  /**
+    * Function for getting empty RBTree instance
+    * @return Returns empty tree
+    */
+  def empty[A]: Tree[A] = Empty
 
 }
