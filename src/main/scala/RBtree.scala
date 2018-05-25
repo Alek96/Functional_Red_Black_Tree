@@ -56,9 +56,11 @@ class RBTree {
           Node(Red, Node(Black, lllChild, llValue, llrChild), lValue, Node(Black, lrChild, value, right))
         case (Black, Node(Red, llChild, lValue, Node(Red, lrlChild, lrValue, lrrChild)), value, right) =>
           Node(Red, Node(Black, llChild, lValue, lrlChild), lrValue, Node(Black, lrrChild, value, right))
-        case (Black, a, x, Node(Red, Node(Red, b, y, c), z, d)) => Node(Red, Node(Black, a, x, b), y, Node(Black, c, z, d))
-        case (Black, a, x, Node(Red, b, y, Node(Red, c, z, d))) => Node(Red, Node(Black, a, x, b), y, Node(Black, c, z, d))
-        case (c, l, v, r) => Node(c, l, v, r)
+        case (Black, left, value, Node(Red, Node(Red, rllChild, rrValue, rlrChild), rValue, rrChild)) =>
+          Node(Red, Node(Black, left, value, rllChild), rrValue, Node(Black, rlrChild, rValue, rrChild))
+        case (Black, left, value, Node(Red, rlChild, rValue, Node(Red, rrlChild, rrValue, rrrChild))) =>
+          Node(Red, Node(Black, left, value, rlChild), rValue, Node(Black, rrlChild, rrValue, rrrChild))
+        case (color, left, value, right) => Node(color, left, value, right)
         case _ => throw new NoSuchElementException
       }
     }
@@ -90,9 +92,9 @@ class RBTree {
       tree match {
         case Node(_, Empty, v, Empty) => summed(Empty, v :: acc)
         case Node(_, Empty, v, r) => summed(r, v :: acc)
-        case Node(_, Node(_, Empty, b, Empty), v, r) => summed(r, v :: b :: acc)
+        case Node(_, Node(_, Empty, lv, Empty), v, r) => summed(r, v :: lv :: acc)
         // rebuild branch to a simpler problem
-        case Node(_, Node(_, a, b, c), v, r) => summed(Node(Red, a, b, Node(Red, c, v, r)), acc)
+        case Node(_, Node(_, ll, lv, lr), v, r) => summed(Node(Red, ll, lv, Node(Red, lr, v, r)), acc)
         case Empty => acc
       }
     }
