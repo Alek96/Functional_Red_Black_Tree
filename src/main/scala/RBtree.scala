@@ -159,16 +159,18 @@ object Node {
     }
 
     def removeLeft(c: Color, l: Tree[A], v: A, r: Tree[A], remVal: A): Tree[A] = {
-      (c, l, v, r) match {
-        case (Black, _, _, _) => balanceLeft(rem(remVal, l), v, r)
-        case (Red, _, _, _) => Node(Red, rem(remVal, l), v, r)
+      l match {
+        case Node(Black, _, _, _) => balanceLeft(rem(remVal, l), v, r)
+        case Node(Red, _, _, _) => Node(Red, rem(remVal, l), v, r)
+        case _ => throw new Error("Something went wrong")
       }
     }
 
     def removeRight(c: Color, l: Tree[A], v: A, r: Tree[A], remVal: A): Tree[A] = {
-      (c, l, v, r) match {
-        case (Black, _, _, _) => balanceRight(l, v, rem(remVal, r))
-        case (Red, _, _, _) => Node(Red, l, v, rem(remVal, r))
+      r match {
+        case Node(Black, _, _, _) => balanceRight(l, v, rem(remVal, r))
+        case Node(Red, _, _, _) => Node(Red, l, v, rem(remVal, r))
+        case _ => throw new Error("Something went wrong")
       }
     }
 

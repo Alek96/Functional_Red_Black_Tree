@@ -35,6 +35,10 @@ class RBtreeTest extends FunSuite {
     assert(exist(2, tree))
   }
 
+  test("Removing from empty tree returns empty tree") {
+    assert(remove(1, Empty) == Empty)
+  }
+
   test("Removing only value gives empty tree") {
     val tree = insert(1, Empty)
     assert(remove(1, tree) == Empty)
