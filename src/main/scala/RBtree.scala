@@ -11,32 +11,29 @@ case object Red extends Color
 case object Black extends Color
 
 /**
-  * Red Black tree implementation
+  * Abstract tree class used for Node and Empty case classes
+  *
+  * @tparam A Type of the value contained in RBtree
   */
-class RBTree {
+sealed abstract class Tree[+A]()
 
-  /**
-    * Abstract tree class used for Node and Empty case classes
-    *
-    * @tparam A Type of the value contained in RBtree
-    */
-  abstract class Tree[+A]()
+/**
+  * Case class for representing not empty nodes of the RBTree
+  *
+  * @param color Color of the Node
+  * @param left  Left subtree
+  * @param value Value of the node
+  * @param right Right subtree
+  */
+case class Node[+A](color: Color, left: Tree[A], value: A, right: Tree[A]) extends Tree[A]
 
-  /**
-    * Case class for representing not empty nodes of the RBTree
-    *
-    * @param color Color of the Node
-    * @param left  Left subtree
-    * @param value Value of the node
-    * @param right Right subtree
-    */
-  final case class Node[+A](color: Color, left: Tree[A], value: A, right: Tree[A]) extends Tree[A]
+/**
+  * Case class for representing empty leaves of the RBTree
+  */
+case object Empty extends Tree[Nothing]
 
-  /**
-    * Case class for representing empty leaves of the RBTree
-    */
-  final case object Empty extends Tree[Nothing]
 
+object Node {
   /**
     * Function for inserting values into tree.
     *
@@ -103,15 +100,17 @@ class RBTree {
 
   /**
     * Function for removing element from a tree
+    *
     * @param value Value to be removed
-    * @param tree Tree from which we remove
+    * @param tree  Tree from which we remove
     * @tparam A Type of value
     * @return Tree without removed value
     */
   final def remove[A: Ordering](value: A, tree: Tree[A]): Tree[A] = {
     /**
       * Balance after removal
-      * @param left left subtree
+      *
+      * @param left  left subtree
       * @param value value
       * @param right right subtree
       * @return
@@ -141,6 +140,7 @@ class RBTree {
         balance(l, v, Node(Red, rl, rv, rr))
       case (l, Node(Red, Node(Black, rll, rlv, rlr), rv, rr)) =>
         Node(Red, Node(Black, l, v, rll), rlv, balance(rlr, rv, reden(rr)))
+      case (Empty, Empty) => Node(Red, Empty, v, Empty)
       case _ => throw new Error("Something went wrong")
     }
 
@@ -154,6 +154,7 @@ class RBTree {
         balance(Node(Red, ll, lv, lr), v, r)
       case (Node(Red, ll, lv, Node(Black, lrl, lrv, lrr)), r) =>
         Node(Red, balance(reden(ll), lv, lrl), lrv, Node(Black, lrr, v, r))
+      case (Empty, Empty) => Node(Red, Empty, v, Empty)
       case _ => throw new Error("Something went wrong")
     }
 
@@ -173,7 +174,8 @@ class RBTree {
 
     /**
       * Function for making one tree from two children of removed node
-      * @param left Left child of removed node
+      *
+      * @param left  Left child of removed node
       * @param right Right child of removed node
       */
     def add(left: Tree[A], right: Tree[A]): Tree[A] = (left, right) match {
@@ -181,7 +183,7 @@ class RBTree {
       case (l, Empty) => l
       case (Node(Red, ll, lv, lr), Node(Red, rl, rv, rr)) =>
         add(lr, rl) match {
-          case Node(Red, a, va, b) => Node(Red, Node(Red, ll, lv, a), va,  Node(Red, b, rv, rr))
+          case Node(Red, a, va, b) => Node(Red, Node(Red, ll, lv, a), va, Node(Red, b, rv, rr))
           case c => Node(Red, ll, lv, Node(Red, c, rv, rr))
         }
       case (Node(Black, ll, xv, lr), Node(Black, rl, rv, rr)) =>
@@ -312,5 +314,4 @@ class RBTree {
 
     innerIntersect(tree1, tree2)()
   }
-
 }
