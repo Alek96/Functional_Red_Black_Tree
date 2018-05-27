@@ -37,8 +37,18 @@ class RBTree {
     */
   final case object Empty extends Tree[Nothing]
 
-  //https://course.ccs.neu.edu/cs3500wc/jfp99redblack.pdf
+  /**
+    * Function for inserting values into tree.
+    * @param value Value which is to be inserted
+    * @param tree Tree in which we insert
+    * @tparam A Type of value
+    * @return New tree with inserted value
+    */
   def insert[A: Ordering](value: A, tree: Tree[A]): Tree[A] = {
+    /**
+      * Function chosing in which subtree to insert value
+      * @param tree Tree in which we insert
+      */
     def ins(tree: Tree[A]): Tree[A] = {
       tree match {
         case Empty => Node(Red, Empty, value, Empty)
@@ -50,6 +60,13 @@ class RBTree {
       }
     }
 
+    /**
+      * Function for balancing tree after inserting
+      * @param color Color of node we want to balance
+      * @param left Left subtree
+      * @param value Value of node
+      * @param right Right subtree
+      */
     def balance(color: Color, left: Tree[A], value: A, right: Tree[A]): Tree[A] = {
       (color, left, value, right) match {
         case (Black, Node(Red, Node(Red, lllChild, llValue, llrChild), lValue, lrChild), value, right) =>
@@ -65,6 +82,11 @@ class RBTree {
       }
     }
 
+    /**
+      * FUnction for changing root to black
+      * @param tree Tree which root we want to recolor
+      * @return Tree with root recolored to black
+      */
     def blacken(tree: Tree[A]): Tree[A] = {
       tree match {
         case Node(_, left, nodeValue, right) => Node(Black, left, nodeValue, right)
@@ -74,6 +96,13 @@ class RBTree {
     blacken(ins(tree))
   }
 
+  /**
+    * Function for checking if value exists in tree
+    * @param value Value which existance we want to check
+    * @param tree Tree in which we look for it
+    * @tparam A Type of Value
+    * @return Result of search
+    */
   @tailrec
   final def exist[A: Ordering](value: A, tree: Tree[A]): Boolean = {
     tree match {
@@ -86,34 +115,40 @@ class RBTree {
     }
   }
 
-  final def getList[A: Ordering](tree: Tree[A]): List[A] = {
-    @tailrec
-    def summed(tree: Tree[A], acc: List[A]): List[A] = {
-      tree match {
-        case Node(_, Empty, v, Empty) => summed(Empty, v :: acc)
-        case Node(_, Empty, v, r) => summed(r, v :: acc)
-        case Node(_, Node(_, Empty, lv, Empty), v, r) => summed(r, v :: lv :: acc)
-        // rebuild branch to a simpler problem
-        case Node(_, Node(_, ll, lv, lr), v, r) => summed(Node(Red, ll, lv, Node(Red, lr, v, r)), acc)
-        case Empty => acc
-      }
-    }
-
-    summed(tree, List[A]())
-  }
-
-  final def fromList[A: Ordering](list: List[A]): Tree[A] = {
-    @tailrec
-    def innerFromList(list: List[A], res: Tree[A] = Empty): Tree[A] = {
-      if (list.isEmpty)
-        res
-      else
-        innerFromList(list.tail, insert(list.head, res))
-    }
-
-    innerFromList(list)
-  }
-
+//  final def getList[A: Ordering](tree: Tree[A]): List[A] = {
+//    @tailrec
+//    def summed(tree: Tree[A], acc: List[A]): List[A] = {
+//      tree match {
+//        case Node(_, Empty, v, Empty) => summed(Empty, v :: acc)
+//        case Node(_, Empty, v, r) => summed(r, v :: acc)
+//        case Node(_, Node(_, Empty, lv, Empty), v, r) => summed(r, v :: lv :: acc)
+//        // rebuild branch to a simpler problem
+//        case Node(_, Node(_, ll, lv, lr), v, r) => summed(Node(Red, ll, lv, Node(Red, lr, v, r)), acc)
+//        case Empty => acc
+//      }
+//    }
+//
+//    summed(tree, List[A]())
+//  }
+//
+//  final def fromList[A: Ordering](list: List[A]): Tree[A] = {
+//    @tailrec
+//    def innerFromList(list: List[A], res: Tree[A] = Empty): Tree[A] = {
+//      if (list.isEmpty)
+//        res
+//      else
+//        innerFromList(list.tail, insert(list.head, res))
+//    }
+//
+//    innerFromList(list)
+//  }
+  /**
+    * Function for creating an union of 2 trees
+    * @param tree1 First tree
+    * @param tree2 Second tree
+    * @tparam A Type of value stored inside tree
+    * @return New tree which is union of 2 trees
+    */
   @tailrec
   final def union[A: Ordering](tree1: Tree[A])(tree2: Tree[A]): Tree[A] =
     tree1 match {
@@ -121,9 +156,13 @@ class RBTree {
       case Node(_, _, v, _) => union(remove(v, tree1))(insert(v, tree2))
     }
 
-  //lub
-  //fromList(getList(tree1).union(getList(tree2)))
-
+  /**
+    * Function for intersecting 2 tree
+    * @param tree1 First tree
+    * @param tree2 Second tree
+    * @tparam A Type of value
+    * @return New tree which is intersection of 2 trees
+    */
   final def intersect[A: Ordering](tree1: Tree[A], tree2: Tree[A]): Tree[A] = {
     @tailrec
     def innerIntersect(tree1: Tree[A], tree2: Tree[A])(res: Tree[A] = Empty): Tree[A] = {
@@ -139,8 +178,5 @@ class RBTree {
 
     innerIntersect(tree1, tree2)()
   }
-
-  //lub
-  //fromList(getList(tree1).intersect(getList(tree2)))
 
 }
