@@ -159,16 +159,18 @@ object Node {
     }
 
     def removeLeft(c: Color, l: Tree[A], v: A, r: Tree[A], remVal: A): Tree[A] = {
-      (c, l, v, r) match {
-        case (Black, _, _, _) => balanceLeft(rem(remVal, l), v, r)
-        case (Red, _, _, _) => Node(Red, rem(remVal, l), v, r)
+      l match {
+        case Node(Black, _, _, _) => balanceLeft(rem(remVal, l), v, r)
+        case Node(Red, _, _, _) => Node(Red, rem(remVal, l), v, r)
+        case _ => throw new Error("Something went wrong")
       }
     }
 
     def removeRight(c: Color, l: Tree[A], v: A, r: Tree[A], remVal: A): Tree[A] = {
-      (c, l, v, r) match {
-        case (Black, _, _, _) => balanceRight(l, v, rem(remVal, r))
-        case (Red, _, _, _) => Node(Red, l, v, rem(remVal, r))
+      r match {
+        case Node(Black, _, _, _) => balanceRight(l, v, rem(remVal, r))
+        case Node(Red, _, _, _) => Node(Red, l, v, rem(remVal, r))
+        case _ => throw new Error("Something went wrong")
       }
     }
 
@@ -249,33 +251,6 @@ object Node {
     }
   }
 
-  //  final def getList[A: Ordering](tree: Tree[A]): List[A] = {
-  //    @tailrec
-  //    def summed(tree: Tree[A], acc: List[A]): List[A] = {
-  //      tree match {
-  //        case Node(_, Empty, v, Empty) => summed(Empty, v :: acc)
-  //        case Node(_, Empty, v, r) => summed(r, v :: acc)
-  //        case Node(_, Node(_, Empty, lv, Empty), v, r) => summed(r, v :: lv :: acc)
-  //        // rebuild branch to a simpler problem
-  //        case Node(_, Node(_, ll, lv, lr), v, r) => summed(Node(Red, ll, lv, Node(Red, lr, v, r)), acc)
-  //        case Empty => acc
-  //      }
-  //    }
-  //
-  //    summed(tree, List[A]())
-  //  }
-  //
-  //  final def fromList[A: Ordering](list: List[A]): Tree[A] = {
-  //    @tailrec
-  //    def innerFromList(list: List[A], res: Tree[A] = Empty): Tree[A] = {
-  //      if (list.isEmpty)
-  //        res
-  //      else
-  //        innerFromList(list.tail, insert(list.head, res))
-  //    }
-  //
-  //    innerFromList(list)
-  //  }
   /**
     * Function for creating an union of 2 trees
     *

@@ -35,9 +35,18 @@ class RBtreeTest extends FunSuite {
     assert(exist(2, tree))
   }
 
+  test("Removing from empty tree returns empty tree") {
+    assert(remove(1, Empty) == Empty)
+  }
+
   test("Removing only value gives empty tree") {
     val tree = insert(1, Empty)
     assert(remove(1, tree) == Empty)
+  }
+
+  test("Inserting element that already exists returns same tree") {
+    val tree = insert(1, Empty)
+    assert(tree == insert(1, tree))
   }
 
   test("Two tree are equal") {
@@ -75,5 +84,24 @@ class RBtreeTest extends FunSuite {
 
   test("Intersect of Empty and Empty is Empty") {
     assert(intersect(Empty, Empty) == Empty)
+  }
+
+  test("Root is black") {
+    val tree = insert(1, Empty)
+    val isBlack = tree match {
+      case Node(Black, _, _, _) => true
+      case _ => false
+    }
+    assert(isBlack)
+  }
+
+  test("Root after removal is black") {
+    val tree = insert(2, insert(1, Empty))
+    val tree2 = remove(1, tree)
+    val isBlack = tree2 match {
+      case Node(Black, _, _, _) => true
+      case _ => false
+    }
+    assert(isBlack)
   }
 }
