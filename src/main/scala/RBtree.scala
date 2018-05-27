@@ -101,7 +101,21 @@ class RBTree {
     blacken(ins(tree))
   }
 
+  /**
+    * Function for removing element from a tree
+    * @param value Value to be removed
+    * @param tree Tree from which we remove
+    * @tparam A Type of value
+    * @return Tree without removed value
+    */
   final def remove[A: Ordering](value: A, tree: Tree[A]): Tree[A] = {
+    /**
+      * Balance after removal
+      * @param left left subtree
+      * @param value value
+      * @param right right subtree
+      * @return
+      */
     def balance(left: Tree[A], value: A, right: Tree[A]): Tree[A] = (left, right) match {
       case (Node(Red, ll, lv, lr), Node(Red, rl, rv, rr)) =>
         Node(Red, Node(Black, ll, lv, lr), value, Node(Black, rl, rv, rr))
@@ -117,6 +131,9 @@ class RBTree {
         Node(Black, l, value, r)
     }
 
+    /**
+      * Balancing if we remove from left subtree
+      */
     def balanceLeft(left: Tree[A], v: A, right: Tree[A]): Tree[A] = (left, right) match {
       case (Node(Red, ll, lv, lr), r) =>
         Node(Red, Node(Black, ll, lv, lr), v, r)
@@ -127,6 +144,9 @@ class RBTree {
       case _ => throw new Error("Something went wrong")
     }
 
+    /**
+      * Balancing if we remove from right subtree
+      */
     def balanceRight(left: Tree[A], v: A, right: Tree[A]): Tree[A] = (left, right) match {
       case (l, Node(Red, rl, rv, rr)) =>
         Node(Red, l, v, Node(Black, rl, rv, rr))
@@ -139,18 +159,23 @@ class RBTree {
 
     def removeLeft(c: Color, l: Tree[A], v: A, r: Tree[A], remVal: A): Tree[A] = {
       (c, l, v, r) match {
-        case (Black, _, _, _) => balanceLeft(remove(remVal, l), v, r)
+        case (Black, _, _, _) => balanceLeft(rem(remVal, l), v, r)
         case (Red, _, _, _) => Node(Red, rem(remVal, l), v, r)
       }
     }
 
     def removeRight(c: Color, l: Tree[A], v: A, r: Tree[A], remVal: A): Tree[A] = {
       (c, l, v, r) match {
-        case (Black, _, _, _) => balanceRight(l, v, remove(remVal, r))
+        case (Black, _, _, _) => balanceRight(l, v, rem(remVal, r))
         case (Red, _, _, _) => Node(Red, l, v, rem(remVal, r))
       }
     }
 
+    /**
+      * Function for making one tree from two children of removed node
+      * @param left Left child of removed node
+      * @param right Right child of removed node
+      */
     def add(left: Tree[A], right: Tree[A]): Tree[A] = (left, right) match {
       case (Empty, r) => r
       case (l, Empty) => l
@@ -169,7 +194,9 @@ class RBTree {
       case _ => throw new Error("Something went wrong")
     }
 
-
+    /**
+      * Function for recoloring node to black
+      */
     def blacken(tree: Tree[A]): Tree[A] = {
       tree match {
         case Node(_, left, nodeValue, right) => Node(Black, left, nodeValue, right)
@@ -177,6 +204,9 @@ class RBTree {
       }
     }
 
+    /**
+      * Function for recoloring node to red
+      */
     def reden(tree: Tree[A]): Tree[A] = tree match {
       case Node(Black, l, v, r) => Node(Red, l, v, r)
       case _ => throw new Error("Expected black node in reden function")
